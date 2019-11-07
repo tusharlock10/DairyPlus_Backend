@@ -15,5 +15,6 @@ const Product = new Schema({
   comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}] // refs to comments
 });
 
+
 Article.plugin(mongoose_fuzzy_searching, {fields: ['topic']});
 mongoose.model('Article', Article);
