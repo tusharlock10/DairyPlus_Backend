@@ -3,20 +3,29 @@ const { Schema } = mongoose;
 
 const CartItem = new Schema({
   product_id:{type:Schema.Types.ObjectId, 'ref':'Product'},
-  product_name: String,
-  number: Number,  // means number of these product ordered
-  sub_total_amount: Number
+  name: String,
+  amount: String,
+  sub_total: Number,
+  quantity: Number,
+  selling_price: Number
 })
 
 const Order = new Schema({
   show_order_id: String, // this id just for showing on user's device
-  total_amount: Number,
-  date_ordered: {type:Date, default:Date.now()},  // Date when the order is placed
+  cart_price: Number, // total price of all the items in the cart
+  user: {type:Schema.Types.ObjectId, ref:'User'},
+  date_ordered: {type:Date},  // Date when the order is placed
   expected_date_of_delivery: {type:Date}, // estimated delivery date
   date_of_delivery: {type:Date}, // date when the order is actually delivered, if it is delivered
-  is_delivered: {type:Boolean, default:false},
-  amount_without_tax: Number,
-  payment_method:String,
+  is_delivered: {type:Boolean, default:false}, // is delivered or not
+  status: {type:String, default:'upcoming'},  // upcomin/delivered/cancelled
+  payment_method:String, // paypal, cash, cheque,
+  isPaid: Boolean,
+  fast_delivery: Boolean, // is order for fast delivery or not
+  address: String,
+  user_name: String,
+  phone: String,
+  paymentId: String, // valid only for Paypal
   cart: [CartItem]
 });
 

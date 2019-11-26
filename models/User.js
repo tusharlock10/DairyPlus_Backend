@@ -3,10 +3,11 @@ const { Schema } = mongoose;
 
 const CartItem = new Schema({
   product_id:{type:Schema.Types.ObjectId, 'ref':'Product'},
-  product_name: String,
-  product_category: String,
+  name: String,
+  amount: String,
+  sub_total: String,
   quantity: Number,
-  sub_total_amount: Number
+  selling_price: Number
 })
 
 const User = new Schema({
@@ -14,10 +15,11 @@ const User = new Schema({
   phone: String,
   email: String,
   address:String,
+  cart_price: Number,
   cart: [CartItem],
-  total_items_ordered: {type:Number, default:0},
   all_orders: [{type:Schema.Types.ObjectId, ref:'Order'}],
-  incomplete_orders: [{type:Schema.Types.ObjectId, ref:'Order'}]
+  incomplete_orders: [{type:Schema.Types.ObjectId, ref:'Order'}],
+  completed_orders: [{type:Schema.Types.ObjectId, 'ref':'Order'}]
 });
 
 mongoose.model('User', User);

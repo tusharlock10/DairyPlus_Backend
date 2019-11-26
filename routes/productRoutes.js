@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const Product = mongoose.model('Product');
-
+const sh = require('shorthash');
 
 module.exports = (app) => {
 
