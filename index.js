@@ -29,23 +29,24 @@ const authTokenValidator = async (req, res, next) => {
   const User = mongoose.model('User');
   console.log("req.url: ", req.url)
 
-  if (!['/api/login/', '/api/register/', '/api/payment/paypal/cancel/','/api/payment/paypal/success/'].includes(req.url)){
-    User.findById(req.headers.authorization).select("_id").lean().then((response) => {
-      if (!response){
-        res.send({error: "Invalid token"})
-      }
-      else{
-        next();
-      }
-    })
-  }
-  else{
-    next()
-  }
+  // if (!['/api/login/', '/api/register/', '/api/payment/paypal/cancel/','/api/payment/paypal/success/'].includes(req.url)){
+  //   User.findById(req.headers.authorization).select("_id").lean().then((response) => {
+  //     if (!response){
+  //       res.send({error: "Invalid token"})
+  //     }
+  //     else{
+  //       next();
+  //     }
+  //   })
+  // }
+  // else{
+  //   next()
+  // }
+  next();
 }
 
 app.use(express.json());
-// app.use(authTokenValidator);
+app.use(authTokenValidator);
 
 
 // ROUTES
