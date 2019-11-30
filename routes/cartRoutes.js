@@ -14,6 +14,11 @@ const CLIENT_SECRET =
 const CURRENCY = "CAD";
 var current_payments = {}
 
+const RETURL_URL = "https://dairy-plus.herokuapp.com/api/payment/paypal/success/";
+const CANCEL_URL = "https://dairy-plus.herokuapp.com/payment/paypal/cancel/";
+// const RETURL_URL = "http://192.168.0.103:8000/api/payment/paypal/success/";
+// const CANCEL_URL = "http://192.168.0.103:8000/payment/paypal/cancel/"
+
 
 paypal.configure({
   mode: "sandbox", //sandbox or live
@@ -66,8 +71,8 @@ module.exports = app => {
             payment_method: "paypal"
           },
           redirect_urls: {
-            return_url: "http://192.168.0.103:8000/api/payment/paypal/success/",
-            cancel_url: "http://192.168.0.103:8000/api/payment/paypal/cancel/"
+            return_url: RETURL_URL,
+            cancel_url: CANCEL_URL
           },
           transactions: [
             {
@@ -88,7 +93,7 @@ module.exports = app => {
           if (error) {
             throw error;
           } else {
-            console.log("Create Payment Response");
+            // console.log("Create Payment Response");
             console.log(payment);
             current_payments[`${payment.id}`] = [cart.cart_price, req.headers.authorization, req.query.fast]
             res.redirect(payment.links[1].href);
