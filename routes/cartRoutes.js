@@ -14,10 +14,10 @@ const CLIENT_SECRET =
 const CURRENCY = "CAD";
 var current_payments = {}
 
-const RETURL_URL = "https://dairy-plus.herokuapp.com/api/payment/paypal/success/";
-const CANCEL_URL = "https://dairy-plus.herokuapp.com/payment/paypal/cancel/";
-// const RETURL_URL = "http://192.168.0.103:8000/api/payment/paypal/success/";
-// const CANCEL_URL = "http://192.168.0.103:8000/payment/paypal/cancel/"
+// const RETURL_URL = "https://dairy-plus.herokuapp.com/api/payment/paypal/success/";
+// const CANCEL_URL = "https://dairy-plus.herokuapp.com/payment/paypal/cancel/";
+const RETURL_URL = "http://192.168.0.103:8000/api/payment/paypal/success/";
+const CANCEL_URL = "http://192.168.0.103:8000/payment/paypal/cancel/"
 
 
 paypal.configure({
@@ -41,6 +41,15 @@ module.exports = app => {
         res.send({ address:user.address });
     });
   });
+
+  app.get("/api/speed/", (req, res)=>{
+    t = Date.now();
+    sum=0;
+    while((Date.now()-t)<1000){
+      sum++;
+    }
+    res.send((sum).toString())
+  })
 
   app.get("/api/payment/paypal/", (req, res) => {
     User.findById(req.headers.authorization)
