@@ -17,6 +17,10 @@ const User = new Schema({
   address:String,
   cart_price: Number,
   cart: [CartItem],
+  promo_code:{type:String, default:""},
+  discount: {type:Number, default:0},
+  isAdmin: {type:Boolean, default:false},
+  isPartialAdmin: {type:Boolean, default:false},
   all_orders: [{type:Schema.Types.ObjectId, ref:'Order'}],
   incomplete_orders: [{type:Schema.Types.ObjectId, ref:'Order'}],
   completed_orders: [{type:Schema.Types.ObjectId, 'ref':'Order'}]

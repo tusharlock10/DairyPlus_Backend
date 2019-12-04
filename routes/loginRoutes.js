@@ -56,7 +56,6 @@ module.exports = (app) => {
         res.send({error: "User already exists, please go back and login"})
       }
       else{
-        
         if (otp){
           if (OTPObject[phone]===otp && otp.length===4){
             const new_user = new User({

@@ -19,6 +19,10 @@ var current_payments = {}
 const RETURL_URL = "http://192.168.0.103:8000/api/payment/paypal/success/";
 const CANCEL_URL = "http://192.168.0.103:8000/payment/paypal/cancel/"
 
+const PROMO_CODES = {
+  "XTREME10": 10, "FESTIVEOFF":30, "SPECIAL15":15, "DARYPLS20":20
+} // in percentage eg. 10 means 10% discount on the cart_price but not including fast delivery fee
+
 
 paypal.configure({
   mode: "sandbox", //sandbox or live
@@ -29,6 +33,42 @@ paypal.configure({
 module.exports = app => {
   app.engine("ejs", engines.ejs);
   app.set("view engine", "ejs");
+
+  app.post("/api/cart/promocode/", (req, res)=>{
+    promo_code = req.body.promo_code.toUpperCase()
+    if (PROMO_CODES[promo_code]){
+      User.findById(req.headers.authorization).select('discount promo_code').then((user)=>{
+        user.promo_code = promo_code;
+        user.discount = PROMO_CODES[promo_code]
+        user.save();
+        res.send({discount:PROMO_CODES[promo_code]});
+      });
+    }
+    else{
+      User.findById(req.headers.authorization).select('discount promo_code').then((user)=>{
+        user.promo_code = '';
+        user.discount = 0
+        user.save();
+        if (promo_code==='##REMOVE##'){
+          res.send({error:"Promo Code Removed"})
+        }
+        else{
+          res.send({error:"Invalid Promo Code"})
+        }
+      });
+    }
+  })
+
+  app.get("/api/cart/promocode/", (req, res)=>{
+    User.findById(req.headers.authorization).lean().select('promo_code').then((user)=>{
+      promo_code = user.promo_code
+      discount = PROMO_CODES[promo_code]
+      if (!discount){
+        discount = 0
+      }
+      res.send({discount, promo_code});
+    });
+  })
 
   app.post("/api/savecart/", (req, res) => {
     const { cart, grand_total } = req.body;
@@ -54,12 +94,18 @@ module.exports = app => {
   app.get("/api/payment/paypal/", (req, res) => {
     User.findById(req.headers.authorization)
       .lean()
-      .select("cart cart_price")
+      .select("cart cart_price discount promo_code")
       .then(cart => {
-        console.log("Query: ", req.query);
+        original_price = cart.cart_price
+        discount_given = 0
+        if (cart.discount!==0){
+          discount_given = (cart.cart_price*cart.discount)/100
+          cart.cart_price = cart.cart_price - discount_given
+        }
         let new_items_list = [];
         if (req.query.fast === "1") {
           cart.cart_price += 25;
+          original_price+=25;
           new_items_list.push({name:"Fast Delivery", price:25, currency:CURRENCY, quantity:1})
         }
         //[{name, amount, quantity, selling_price}] to [{name, sku:amount, price:selling_price, quantity }]
@@ -91,9 +137,13 @@ module.exports = app => {
               },
               amount: {
                 currency: CURRENCY,
-                total: cart.cart_price
+                total: cart.cart_price,
+                "details":{
+                  "subtotal": original_price,
+                  "discount": discount_given
+                }
               },
-              description: "This is the cart amount for Dairy Plus"
+              description: "This is the payment amount for Dairy Plus Cart"
             }
           ]
         };
@@ -102,9 +152,8 @@ module.exports = app => {
           if (error) {
             throw error;
           } else {
-            // console.log("Create Payment Response");
             console.log(payment);
-            current_payments[`${payment.id}`] = [cart.cart_price, req.headers.authorization, req.query.fast]
+            current_payments[`${payment.id}`] = [cart.cart_price, req.headers.authorization, req.query.fast, original_price]
             res.redirect(payment.links[1].href);
           }
         });
@@ -116,7 +165,7 @@ module.exports = app => {
     var PayerID = req.query.PayerID;
     var paymentId = req.query.paymentId;
     const current_payments_list = current_payments[`${paymentId}`]
-    console.log("\n\nThis is paylemts list: ", current_payments_list)
+    var original_price = current_payments_list[3]
     var execute_payment_json = {
       payer_id: PayerID,
       transactions: [
@@ -162,6 +211,9 @@ module.exports = app => {
             expected_date_of_delivery,
             fast_delivery,
             cart: user.cart,
+            original_price,
+            promo_code: user.promo_code,
+            discount: user.discount,
             paymentId,
             date_ordered: Date.now(),
             payment_method:'Paypal',
@@ -173,6 +225,8 @@ module.exports = app => {
           user.incomplete_orders.push(new_order._id);
           user.cart_price = 0;
           user.cart = [];
+          user.discount = 0;
+          user.promo_code = "";
           user.save();
           delete current_payments[`${paymentId}`]
         }
@@ -190,12 +244,18 @@ module.exports = app => {
     fast_delivery = req.body.fast_delivery
 
     User.findById(req.headers.authorization).then((user)=>{
-      cart_price = user.cart_price
+      let cart_price = user.cart_price
+      let original_price = cart_price
+      if (user.discount!==0){
+        cart_price = cart_price - (cart_price*user.discount)/100
+      }
+
       if (fast_delivery){
         x = new Date()
         x.setDate(x.getDate()+2)
         expected_date_of_delivery =x
         cart_price += 25
+        original_price += 25
       }
       else{
         x = new Date()
@@ -212,6 +272,9 @@ module.exports = app => {
         expected_date_of_delivery,
         fast_delivery,
         cart: user.cart,
+        original_price,
+        promo_code: user.promo_code,
+        discount: user.discount,
         payment_method:mode,
         date_ordered:Date.now(),
         isPaid: false,
@@ -223,10 +286,10 @@ module.exports = app => {
       user.incomplete_orders.push(new_order._id);
       user.cart_price = 0;
       user.cart = [];
+      user.promo_code = "",
+      user.discount=0;
       user.save();
       res.send({successful:true})
     });
-  })
-
-
+  });
 };
