@@ -20,10 +20,12 @@ module.exports = (app) => {
   });
 
   app.get('/api/settings/', (req, res)=>{
-    User.findById(req.headers.authorization).lean().select('name phone email address').then((user)=>{
+    User.findById(req.headers.authorization).select('last_used name phone email address').then((user)=>{
       if (ADMIN_PHONE.includes(user.phone)){
         user['isAdmin'] = true
       }
+      user.last_used = Date.now();
+      user.save();
       res.send(user);
     });
   });
