@@ -4,7 +4,7 @@ const Product = mongoose.model('Product');
 const Order = mongoose.model('Order');
 const sh = require('shorthash');
 
-ADMIN_PHONE = ["9354527144", "9069988099"]
+ADMIN_PHONE = ["9354527144"]
 
 module.exports = (app) => {
 

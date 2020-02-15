@@ -9,7 +9,7 @@ require("./models/Product");
 require('./models/User');
 require('./models/Order');
 
-// app url: https://dairy-plus.herokuapp.com/
+// app url: https://dairyplus.herokuapp.com/
 
 process.on('uncaughtException', (e)=>{
   console.log("Got error:", e);
