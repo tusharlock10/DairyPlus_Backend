@@ -2,9 +2,6 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const Product = mongoose.model('Product');
 const Order = mongoose.model('Order');
-const sh = require('shorthash');
-
-ADMIN_PHONE = ["9354527144"]
 
 module.exports = (app) => {
 
@@ -20,10 +17,7 @@ module.exports = (app) => {
   });
 
   app.get('/api/settings/', (req, res)=>{
-    User.findById(req.headers.authorization).select('last_used name phone email address').then((user)=>{
-      if (ADMIN_PHONE.includes(user.phone)){
-        user['isAdmin'] = true
-      }
+    User.findById(req.headers.authorization).select('last_used name phone email address isAdmin').then((user)=>{
       user.last_used = Date.now();
       user.save();
       res.send(user);
@@ -42,8 +36,8 @@ module.exports = (app) => {
   })
 
   app.get('/api/admin/', (req, res)=>{
-    User.findById(req.headers.authorization).lean().select('phone').then((user)=>{
-      if (!ADMIN_PHONE.includes(user.phone)){
+    User.findById(req.headers.authorization).lean().select('phone isAdmin').then((user)=>{
+      if (!user.isAdmin){
         res.send("You are not authorized to do so")
       }
       else{
@@ -55,8 +49,8 @@ module.exports = (app) => {
   })
 
   app.post('/api/admin/delivered/', (req, res) => {
-    User.findById(req.headers.authorization).lean().select('phone').then((user)=>{
-      if (!ADMIN_PHONE.includes(user.phone)){
+    User.findById(req.headers.authorization).lean().select('phone isAdmin').then((user)=>{
+      if (!user.isAdmin){
         res.send("You are not authorized to do so")
       }
       else{
