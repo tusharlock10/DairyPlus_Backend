@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
-const axios = require('axios')
 
 var OTPObject = {} // store all otp currently in use
 
@@ -14,8 +13,8 @@ const sendOTPMessage = (phone, otp) => {
     "text": "Your OTP for Dairy Plus is: "+otp,
     "from": "Dairy Plus"
   }
-  // axios.post(OTP_URL, message);
-  console.log("OTP sent is: ", otp)
+  axios.post(OTP_URL, message);
+  // console.log("OTP sent is: ", otp)
 }
 
 module.exports = (app) => {
@@ -38,7 +37,7 @@ module.exports = (app) => {
           }
         }
         else{
-          const new_otp = "0000" // (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
+          const new_otp = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
           sendOTPMessage(phone, new_otp);
           res.send({status: "OTP sent to "+phone});
           OTPObject[phone] = new_otp
@@ -73,7 +72,7 @@ module.exports = (app) => {
           }
         }
         else{
-          const new_otp = "0000" // (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
+          const new_otp = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
           sendOTPMessage(phone, new_otp);
           res.send({status: "OTP sent to "+phone});
           OTPObject[phone] = new_otp

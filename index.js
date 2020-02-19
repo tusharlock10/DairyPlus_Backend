@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const mongoose = require('mongoose');
-const delay = require('delay');
 
 
 require("./models/Product");
@@ -20,14 +19,11 @@ process.on('unhandledRejection', (e)=>{
 })
 
 const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/DairyPlus";
-console.log('Connected to: ', mongoURI)
 mongoose.connect(mongoURI, {useNewUrlParser: true, useUnifiedTopology: true }, );
 
 
 const authTokenValidator = async (req, res, next) => {
-  await delay(1000)
-  const User = mongoose.model('User');
-  console.log("req.url: ", req.url)
+  // const User = mongoose.model('User');
 
   // if (!['/api/login/', '/api/register/', '/api/payment/paypal/cancel/','/api/payment/paypal/success/'].includes(req.url)){
   //   User.findById(req.headers.authorization).select("_id").lean().then((response) => {
@@ -58,7 +54,6 @@ require('./routes/orderRoutes')(app)
 
 
 app.get("/", (req, res) => {
-  console.log("In get")
   res.send({hello:true});
 })
 

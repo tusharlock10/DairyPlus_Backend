@@ -1,10 +1,8 @@
 const engines = require("consolidate");
 const paypal = require("paypal-rest-sdk");
 const sh = require('shorthash');
-const axios = require("axios");
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
-const Product = mongoose.model("Product");
 const Order = mongoose.model("Order");
 
 const CLIENT_ID =
@@ -14,8 +12,8 @@ const CLIENT_SECRET =
 const CURRENCY = "CAD";
 var current_payments = {}
 
-const RETURL_URL = "https://dairy_plus.herokuapp.com/api/payment/paypal/success/";
-const CANCEL_URL = "https://dairy_plus.herokuapp.com/payment/paypal/cancel/";
+const RETURL_URL = "https://dairyplus.herokuapp.com/api/payment/paypal/success/";
+const CANCEL_URL = "https://dairyplus.herokuapp.com/payment/paypal/cancel/";
 // const RETURL_URL = "http://192.168.0.103:8000/api/payment/paypal/success/";
 // const CANCEL_URL = "http://192.168.0.103:8000/payment/paypal/cancel/"
 
@@ -151,7 +149,6 @@ module.exports = app => {
           if (error) {
             throw error;
           } else {
-            console.log(payment);
             current_payments[`${payment.id}`] = [cart.cart_price, req.headers.authorization, req.query.fast, original_price]
             res.redirect(payment.links[1].href);
           }
@@ -197,7 +194,6 @@ module.exports = app => {
         payment
       ) {
         if (error) {
-          console.log(error.response);
           throw error;
         } else {
           res.render("success");
