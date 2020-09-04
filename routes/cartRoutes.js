@@ -12,10 +12,10 @@ const CLIENT_SECRET =
 const CURRENCY = "CAD";
 var current_payments = {}
 
-const RETURL_URL = "https://dairyplus.herokuapp.com/api/payment/paypal/success/";
-const CANCEL_URL = "https://dairyplus.herokuapp.com/payment/paypal/cancel/";
-// const RETURL_URL = "http://192.168.0.103:8000/api/payment/paypal/success/";
-// const CANCEL_URL = "http://192.168.0.103:8000/payment/paypal/cancel/"
+// const RETURL_URL = "https://dairyplus.herokuapp.com/api/payment/paypal/success/";
+// const CANCEL_URL = "https://dairyplus.herokuapp.com/payment/paypal/cancel/";
+const RETURL_URL = "http://192.168.0.103:8000/api/payment/paypal/success/";
+const CANCEL_URL = "http://192.168.0.103:8000/payment/paypal/cancel/"
 
 const PROMO_CODES = {
   "XTREME10": 10, "FESTIVEOFF":30, "SPECIAL15":15, "DARYPLS20":20

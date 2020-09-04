@@ -1,20 +1,22 @@
 const mongoose = require('mongoose');
+const axios = require('axios')
 const User = mongoose.model('User');
 
 var OTPObject = {} // store all otp currently in use
 
 const sendOTPMessage = (phone, otp) => {
-  const OTP_URL = "https://rest.nexmo.com/sms/json";
-  const COUNTRY_CODE = "91";
-  const message = {
-    "api_key":"b63fdec0",
-    "api_secret": "oBFcbI6bEZsRrtCr",
-    "to": COUNTRY_CODE+phone,
-    "text": "Your OTP for Dairy Plus is: "+otp,
-    "from": "Dairy Plus"
-  }
-  axios.post(OTP_URL, message);
-  // console.log("OTP sent is: ", otp)
+  const OTP_URL = "https://control.msg91.com/api/verifyRequestOTP.php";
+  const VERIFY_OTP_URL_PARAMS = {
+    authkey: OTP_API_KEY,
+    country: 91,
+  };
+  axios.default.get(OTP_URL, {
+    params: {
+      ...VERIFY_OTP_URL_PARAMS,
+      mobile: phone,
+      otp,
+    },
+  });
 }
 
 module.exports = (app) => {
