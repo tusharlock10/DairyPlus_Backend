@@ -6,6 +6,7 @@ var OTPObject = {} // store all otp currently in use
 
 const sendOTPMessage = (phone, otp) => {
   const OTP_URL = "https://control.msg91.com/api/verifyRequestOTP.php";
+  const OTP_API_KEY = process.env.OTP_API_KEY
   const VERIFY_OTP_URL_PARAMS = {
     authkey: OTP_API_KEY,
     country: 91,

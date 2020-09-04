@@ -5,10 +5,8 @@ const mongoose = require("mongoose");
 const User = mongoose.model("User");
 const Order = mongoose.model("Order");
 
-const CLIENT_ID =
-  "ASk50VeYdtGqeB2f3Y1TIYbd57ZYL1-XTxWaCbiak2JRCRieXzj4i1c-Sgz0iCbnw-UkIzab8FA3RvLX";
-const CLIENT_SECRET =
-  "EK_lRDcFylwbYk26nsWR9zvdM0qLMSTvtxl_3XPVPC9XhnAwC5XxYRezl_CaKvAeJjeYaWrSkahOiLwh";
+const CLIENT_ID =process.env.CLIENT_ID;
+const CLIENT_SECRET =process.env.CLIENT_SECRET;
 const CURRENCY = "CAD";
 var current_payments = {}
 
